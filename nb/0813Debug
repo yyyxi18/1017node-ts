@@ -80,3 +80,11 @@ if max_id >= model.config.vocab_size or min_id < 0:
     print("⚠️ Token ID 超出模型詞表範圍，請檢查 tokenizer 與 model 是否匹配！")
 else:
     print("✅ Token ID 在合法範圍內。")
+
+
+inputs = tokenizer.apply_chat_template(
+    messages,
+    add_generation_prompt=True,
+    return_tensors="pt",
+    return_dict=True
+).to(model.device)
