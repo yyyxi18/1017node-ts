@@ -1,0 +1,8 @@
+# 載入您的台語數據
+from datasets import load_dataset
+data_file = "/content/drive/MyDrive/train_chatml.jsonl"
+dataset = load_dataset("json", data_files=data_file, split="train")
+
+print(f"✅ 載入 {len(dataset)} 筆台語數據")
+print(f"📊 數據欄位: {dataset.column_names}")
+print(f"📋 範例: {dataset[0]}")
