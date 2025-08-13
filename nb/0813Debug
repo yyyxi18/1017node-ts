@@ -60,3 +60,23 @@ messages = [
     {"role": "system", "content": "你是台語翻譯助手\n\nReasoning: medium"},
     {"role": "user", "content": "請翻譯：今天天氣很好"},
 ]
+
+
+# 檢查 tokenizer 與 model vocab 尺寸
+print(f"Model vocab size: {model.config.vocab_size}")
+print(f"Tokenizer vocab size: {tokenizer.vocab_size}")
+
+# 取出 input_ids
+ids = inputs["input_ids"]
+
+# 檢查最小值與最大值
+min_id = ids.min().item()
+max_id = ids.max().item()
+print(f"Min token id: {min_id}")
+print(f"Max token id: {max_id}")
+
+# 判斷是否越界
+if max_id >= model.config.vocab_size or min_id < 0:
+    print("⚠️ Token ID 超出模型詞表範圍，請檢查 tokenizer 與 model 是否匹配！")
+else:
+    print("✅ Token ID 在合法範圍內。")
