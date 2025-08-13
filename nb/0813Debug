@@ -54,3 +54,9 @@ elif "messages" in dataset.column_names:
     dataset = dataset.map(formatting_prompts_func, batched=True)
 
 output_dir = "gpt-oss-20b-taiwanese-assistant",
+
+
+messages = [
+    {"role": "system", "content": "你是台語翻譯助手\n\nReasoning: medium"},
+    {"role": "user", "content": "請翻譯：今天天氣很好"},
+]
