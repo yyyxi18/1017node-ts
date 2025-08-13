@@ -52,3 +52,5 @@ elif "messages" in dataset.column_names:
     from unsloth.chat_templates import standardize_sharegpt
     dataset = standardize_sharegpt(dataset)
     dataset = dataset.map(formatting_prompts_func, batched=True)
+
+output_dir = "gpt-oss-20b-taiwanese-assistant",
