@@ -6,3 +6,49 @@ dataset = load_dataset("json", data_files=data_file, split="train")
 print(f"✅ 載入 {len(dataset)} 筆台語數據")
 print(f"📊 數據欄位: {dataset.column_names}")
 print(f"📋 範例: {dataset[0]}")
+
+
+# 檢查數據格式並處理
+if "text" in dataset.column_names:
+    # 您的數據是 ChatML 格式，需要轉換
+    def convert_chatml_to_harmony(examples):
+        texts = []
+        for text in examples["text"]:
+            import re
+            
+            # 解析 ChatML
+            system_match = re.search(r'<\|start\|>system\n(.*?)<\|end\|>', text, re.DOTALL)
+            user_match = re.search(r'<\|start\|>user\n(.*?)<\|end\|>', text, re.DOTALL)
+            assistant_match = re.search(r'<\|start\|>assistant\n(.*?)<\|end\|>', text, re.DOTALL)
+            
+            if system_match and user_match and assistant_match:
+                system_content = system_match.group(1).strip()
+                user_content = user_match.group(1).strip()
+                assistant_content = assistant_match.group(1).strip()
+                
+                # 添加推理設定
+                enhanced_system = f"{system_content}\n\nReasoning: medium"
+                
+                conversation = [
+                    {"role": "system", "content": enhanced_system},
+                    {"role": "user", "content": user_content},
+                    {"role": "assistant", "content": assistant_content}
+                ]
+                
+                # 轉換為 harmony format
+                harmony_text = tokenizer.apply_chat_template(
+                    conversation, tokenize=False, add_generation_prompt=False
+                )
+                texts.append(harmony_text)
+            else:
+                texts.append(text)
+        return {"text": texts}
+    
+    dataset = dataset.map(convert_chatml_to_harmony, batched=True)
+    print("✅ ChatML 轉換為 harmony format 完成")
+
+elif "messages" in dataset.column_names:
+    # 如果是標準格式，使用原始處理
+    from unsloth.chat_templates import standardize_sharegpt
+    dataset = standardize_sharegpt(dataset)
+    dataset = dataset.map(formatting_prompts_func, batched=True)
